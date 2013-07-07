@@ -11,4 +11,3 @@ class PlayingCard
     "#{rank} of #{suit}"
   end
 end
-
