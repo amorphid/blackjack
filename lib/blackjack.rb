@@ -138,9 +138,8 @@ def application
 
   puts result(
     score(hands[:player]),
-    score(hands[:dealer]),
-    hands
+    score(hands[:dealer])
   )
 end
 
-# application
+application
