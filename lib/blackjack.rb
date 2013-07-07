@@ -50,7 +50,7 @@ end
 def dealer_turn(hand, deck)
   score = score(hand)
 
-  while hit?(score)
+  while dealer_hit?(score)
     hand << deck.pop
     score = score(hand)
   end
