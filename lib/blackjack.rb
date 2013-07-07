@@ -1,7 +1,3 @@
-require "pry"
-
-# m.babby@berkeley.edu
-
 def deck_of_52_playing_cards
   ranks = "2".upto("10").to_a + ["J", "Q", "K", "A"]
   suits = ["\u2663", "\u2666", "\u2665", "\u2660"]
@@ -25,10 +21,10 @@ def score(hand)
   non_aces.each do |card|
     score += (
       case card[0]
-      when "J" then 10
-      when "Q" then 10
-      when "K" then 10
-      else card[0].to_i
+      when "J"   then 10
+      when "Q"   then 10
+      when "K"   then 10
+      else            card[0].to_i
       end
     )
   end
@@ -51,16 +47,75 @@ def score(hand)
   end
 end
 
+def dealer_turn(hand, deck)
+  score = score(hand)
+
+  while hit?(score)
+    hand << deck.pop
+    score = score(hand)
+  end
+
+  hand
+end
+
+def player_turn(hands, deck)
+  score = score(hands[:player])
+
+  while player_hit?(score)
+    puts
+    puts "Dealer showing #{hands[:dealer]}."
+    puts "Player showing #{hands[:player]}."
+    puts
+    puts "1) hit or 2) stand?"
+
+    choice = gets.chomp
+
+    case choice
+    when "1"
+      hands[:player] << deck.pop
+      score = score(hands[:player])
+    when "2"
+      break
+    else
+      puts "Invalid selection"
+    end
+  end
+
+  hands
+end
+
+def player_hit?(score)
+  case
+  when score[0] >= 21 then false
+  when score[0] <  21 then true
+  end
+end
+
+def dealer_hit?(score)
+  case
+  when score[0] < 17          then true
+  when score == [17, "soft"]  then true
+  when score[0] > 17          then false
+  when score == [17, "hard"]  then false
+  end
+end
+
 def result(player_score, dealer_score)
-  player_wins    = "Player wins :)"
-  player_loses   = "Player loses :("
-  game_is_a_draw = "The game is a draw :P"
+
+  player_busts = "Player: #{player_score[0]}.  Player loses :("
+  dealer_busts = "Dealer: #{dealer_score[0]}.  Player wins :)"
+  player_beats_dealer =
+    "Player: #{player_score[0]} > Dealer: #{dealer_score[0]}.  Player wins :)"
+  dealer_beats_player =
+    "Player: #{player_score[0]} < Dealer: #{dealer_score[0]}.  Player loses :("
+  game_is_a_draw =
+    "Player: #{player_score[0]} = Dealer: #{dealer_score[0]}.  Player draws :P"
 
   case
-  when player_score[0] >  21           then player_loses
-  when dealer_score[0] >  21           then player_wins
-  when player_score[0] >  dealer_score[0] then player_wins
-  when dealer_score[0] >  player_score[0] then player_loses
+  when player_score[0] >  21              then player_busts
+  when dealer_score[0] >  21              then dealer_busts
+  when player_score[0] >  dealer_score[0] then player_beats_dealer
+  when dealer_score[0] >  player_score[0] then dealer_beats_player
   when player_score[0] == dealer_score[0] then game_is_a_draw
   end
 end
@@ -73,10 +128,19 @@ def application
     dealer: [deck.pop]
   }
 
-  scores = {
-    player: score(hand[:player]),
-    player: score(hand[:dealer])
-  }
+  hands = player_turn(hands, deck)
+  hands[:dealer] = dealer_turn(hands[:dealer], deck)
 
-  results(player_score, dealer_score)
+  puts
+  puts "Dealer showing #{hands[:dealer]}."
+  puts "Player showing #{hands[:player]}."
+  puts
+
+  puts result(
+    score(hands[:player]),
+    score(hands[:dealer]),
+    hands
+  )
 end
+
+# application
