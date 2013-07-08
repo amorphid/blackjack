@@ -25,4 +25,3 @@ class DeckBuilder
     ["Clubs", "Diamonds", "Hearts", "Spades"]
   end
 end
-

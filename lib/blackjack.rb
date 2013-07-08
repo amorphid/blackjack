@@ -1,16 +1,4 @@
-def deck_of_52_playing_cards
-  ranks = "2".upto("10").to_a + ["J", "Q", "K", "A"]
-  suits = ["\u2663", "\u2666", "\u2665", "\u2660"]
-  deck = []
-
-  ranks.each do |rank|
-    suits.each do |suit|
-      deck << [rank, suit]
-    end
-  end
-
-  deck
-end
+require "deck_builder"
 
 def score(hand)
   score = 0
@@ -121,7 +109,7 @@ def result(player_score, dealer_score)
 end
 
 def application
-  deck = deck_of_52_playing_cards.shuffle
+  deck = DeckBuilder.new.blackjack
 
   hands = {
     player: [deck.pop] << deck.pop,
@@ -141,5 +129,3 @@ def application
     score(hands[:dealer])
   )
 end
-
-application
